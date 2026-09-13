@@ -14,7 +14,10 @@ class EpisodeTrace:
 
 
 class OfflineReplay:
-    """Scripted, provider-free replay; it never calls an external model."""
+    """Retrieval diagnostic only; no trace here is submitted to a model.
+
+    Use eval.runner.EpisodeRunner for bounded conversations and raw records.
+    """
 
     def __init__(self, harness: RetrievalHarness):
         self.harness = harness
