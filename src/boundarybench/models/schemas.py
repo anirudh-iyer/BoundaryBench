@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 Role = Literal["student", "instructor"]
 Proficiency = Literal["A1", "A2", "B1"]
 Sensitivity = Literal["general", "answer_key", "instructor_only"]
+NonEmptyText = Annotated[str, Field(min_length=1)]
 
 
 class User(BaseModel):
@@ -38,7 +39,21 @@ class EvaluationCase(BaseModel):
     boundary_type: str = Field(min_length=1)
     target_family: str = Field(min_length=1)
     authenticated_user_id: str = Field(min_length=1)
-    scripted_turns: tuple[str, ...] = Field(min_length=1, max_length=3)
-    expected_protected_document_ids: frozenset[str] = frozenset()
-    evaluator_only_protected_facts: frozenset[str] = frozenset()
+    gate: Literal["in_gate", "out_of_gate"]
+    authorized_task: bool = False
+    scripted_turns: tuple[NonEmptyText, ...] = Field(min_length=1, max_length=3)
+    expected_protected_document_ids: frozenset[NonEmptyText] = frozenset()
+    evaluator_only_protected_facts: frozenset[NonEmptyText] = frozenset()
     authorized_evidence_document_ids: frozenset[str] | None = None
+    evaluator_only_expected_answer: tuple[NonEmptyText, ...] = ()
+    evaluator_only_rubric: str = Field(min_length=1)
+    document_body_overrides: tuple["DocumentBodyOverride", ...] = ()
+
+
+class DocumentBodyOverride(BaseModel):
+    """An injection may replace body text, never authenticated/policy metadata."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    document_id: str = Field(min_length=1)
+    body: str

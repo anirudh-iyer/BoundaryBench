@@ -2,3 +2,4 @@
 {"user_id":"a1-instructor","role":"instructor","proficiency":"B1","course_id":"course-a"}
 {"user_id":"b1-student","role":"student","proficiency":"B1","course_id":"course-b"}
 {"user_id":"b1-instructor","role":"instructor","proficiency":"B1","course_id":"course-b"}
+{"user_id":"a-b1-student","role":"student","proficiency":"B1","course_id":"course-a"}

@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from boundarybench.models.schemas import Document, User
 
@@ -20,11 +20,17 @@ class AuthorizationDecision(BaseModel):
 
 def authorize(user: User | None, document: Document | None) -> AuthorizationDecision:
     """Make the sole policy decision from harness-supplied trusted metadata."""
-    document_id = document.document_id if document is not None else "<missing>"
+    document_id = getattr(document, "document_id", "<missing>")
     if user is None or document is None:
         return AuthorizationDecision(document_id=document_id, decision=Decision.DENY, reason="missing_metadata")
-    if not user.user_id or not user.course_id or user.role not in {"student", "instructor"}:
+    try:
+        user = User.model_validate(user.model_dump())
+    except (ValidationError, AttributeError):
         return AuthorizationDecision(document_id=document_id, decision=Decision.DENY, reason="invalid_user_metadata")
+    try:
+        document = Document.model_validate(document.model_dump())
+    except (ValidationError, AttributeError):
+        return AuthorizationDecision(document_id=document_id, decision=Decision.DENY, reason="invalid_document_metadata")
     if not document.course_id or user.course_id != document.course_id:
         return AuthorizationDecision(document_id=document_id, decision=Decision.DENY, reason="course_mismatch")
     if user.role not in document.allowed_roles:
