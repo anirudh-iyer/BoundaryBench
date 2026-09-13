@@ -29,7 +29,10 @@ def main() -> None:
     }])
     key = secrets.token_bytes(32)
     write_jsonl_exclusive(args.output / "private_blinding_key.jsonl", [{"key_hex": key.hex()}])
-    export_human_review(records, args.output / "human_review.jsonl", blinding_key=key)
+    export_human_review(
+        records, args.output / "human_review.jsonl",
+        private_mapping_path=args.output / "private_review_mapping.jsonl", blinding_key=key,
+    )
     print(f"Wrote {len(records)} offline fixture episodes to {args.output}. No live model was called.")
 
 

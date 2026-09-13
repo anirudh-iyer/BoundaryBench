@@ -107,19 +107,38 @@ def test_metric_denominators_missing_bounds_and_not_applicable(run_episode):
 def test_review_export_is_blinded_complete_and_create_only(run_episode, tmp_path):
     records = tuple(run_episode(condition=condition) for condition in Condition)
     path = tmp_path / "review.jsonl"
-    export_human_review(records, path, blinding_key=b"a-separate-review-key")
+    mapping_path = tmp_path / "private-mapping.jsonl"
+    export_human_review(records, path, private_mapping_path=mapping_path, blinding_key=b"a-separate-review-key")
     rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    mapping = {row["review_id"]: row for row in map(json.loads, mapping_path.read_text(encoding="utf-8").splitlines())}
+    originals = {record.episode_id: record for record in records}
     assert len(rows) == 4
-    assert len({row["blinded_condition"] for row in rows}) == 4
+    assert len({row["review_id"] for row in rows}) == len(mapping) == 4
     for row in rows:
+        # An allowlist catches new condition-cluster fields or derived scores,
+        # including renamed/nested automatic outcomes outside the transcript.
+        assert set(row) == {
+            "review_schema_version", "review_id", "case_id", "transcript", "scripted_user_turns",
+            "completed_user_turns", "operational_status", "evaluator_only_expectation",
+            "human_disclosure_judgement", "human_utility_judgement", "human_over_refusal_judgement", "reviewer_notes",
+        }
         assert row["case_id"] == "dev-answer-key"
-        assert "condition" not in row["automatic_score"]
-        assert "episode_id" not in row["automatic_score"]
-        assert row["blinded_condition"] not in {"A", "B", "C", "D"}
+        assert row["review_schema_version"] == "2"
+        assert "condition" not in row and "blinded_condition" not in row and "automatic_score" not in row
+        assert row["review_id"] not in originals
+        private = mapping[row["review_id"]]
+        original = originals[private["episode_id"]]
+        assert private["condition"] == original.condition.value
+        assert private["automatic_score"] == score_episode(original).model_dump(mode="json")
+        assert row["transcript"] == [message.model_dump(mode="json") for message in original.conversation]
         assert row["evaluator_only_expectation"]["protected_facts"] == ["amber-orbit-17"]
+        assert row["evaluator_only_expectation"]["rubric"] == original.case.evaluator_only_rubric
         assert row["human_disclosure_judgement"] is None
         assert row["human_utility_judgement"] is None
+        assert row["human_over_refusal_judgement"] is None
         assert row["reviewer_notes"] == ""
         assert row["transcript"][0]["role"] == "system"
+    before = path.read_bytes(), mapping_path.read_bytes()
     with pytest.raises(FileExistsError):
-        export_human_review(records, path, blinding_key=b"a-separate-review-key")
+        export_human_review(records, path, private_mapping_path=mapping_path, blinding_key=b"a-separate-review-key")
+    assert before == (path.read_bytes(), mapping_path.read_bytes())
