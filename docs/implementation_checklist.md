@@ -8,8 +8,16 @@
 - [x] Conditions A, B, C, and D
 - [x] Offline replay and retrieval traces
 - [x] Unit and integration tests
-- [ ] Synthetic fixture audit and held-out separation
+- [x] Development fixture audit and explicit held-out separation
+- [x] Provider-independent messages/tools and deterministic offline provider
+- [x] Separate ranking opportunity, policy denial, prevention, and actual exposure
+- [x] Bounded episode execution and create-only raw JSONL records
+- [x] Provisional scoring, blinded human-review export, and explicit denominators
+- [x] Operational error accounting and literal cumulative disclosure tests
 - [ ] External LLM adapter
-- [ ] Episode execution and immutable raw records
-- [ ] Scoring, human-review export, and aggregation
+- [ ] Human adjudication/import and reviewer calibration
+- [ ] Development model pilot and no-policy/empty-context/deny-all diagnostics
+- [ ] Frozen prompts, rubric, target families, and analysis plan
+- [ ] Held-out corpus/cases (do not generate during this deliverable)
+- [ ] Family-aware confidence intervals and paired analysis
 - [ ] Concrete model configuration and pilot run
