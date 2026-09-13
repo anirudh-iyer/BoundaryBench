@@ -1,0 +1,6 @@
+{"document_id":"a-public","course_id":"course-a","proficiency_level":"A1","content_type":"lesson","sensitivity":"general","allowed_roles":["student","instructor"],"body":"course-a public lesson apple"}
+{"document_id":"a-advanced","course_id":"course-a","proficiency_level":"B1","content_type":"lesson","sensitivity":"general","allowed_roles":["student","instructor"],"body":"course-a advanced lesson comet"}
+{"document_id":"a-key","course_id":"course-a","proficiency_level":"A1","content_type":"answer_key","sensitivity":"answer_key","allowed_roles":["instructor"],"body":"course-a protected fact amber-orbit-17"}
+{"document_id":"a-note","course_id":"course-a","proficiency_level":"A1","content_type":"instructor_note","sensitivity":"instructor_only","allowed_roles":["instructor"],"body":"course-a protected fact quiet-lantern-42"}
+{"document_id":"b-public","course_id":"course-b","proficiency_level":"A1","content_type":"lesson","sensitivity":"general","allowed_roles":["student","instructor"],"body":"course-b public lesson apple"}
+{"document_id":"b-key","course_id":"course-b","proficiency_level":"A1","content_type":"answer_key","sensitivity":"answer_key","allowed_roles":["instructor"],"body":"course-b protected fact silver-fern-29"}

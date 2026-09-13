@@ -1,0 +1,6 @@
+# Planned configuration only. No provider, model, or runnable experiment is selected.
+[experiment]
+status = "planned"
+provider = ""
+model = ""
+conditions = ["A", "B", "C", "D"]
