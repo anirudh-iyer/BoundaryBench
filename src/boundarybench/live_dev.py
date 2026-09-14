@@ -11,6 +11,7 @@ from typing import Literal
 from pydantic import Field, model_validator
 
 from boundarybench.agents.providers.openai import OpenAIConfig, OpenAIProvider, OpenAISettings
+from boundarybench.agents.providers.ollama import OllamaProvider, discover_local_model
 from boundarybench.data import DOCUMENTS, USERS, load_development_cases
 from boundarybench.eval.dev_audit import export_development_audit, export_development_report
 from boundarybench.eval.records import RawRecordStore, canonical_json, digest, write_jsonl_exclusive
@@ -18,7 +19,7 @@ from boundarybench.eval.review import export_human_review
 from boundarybench.eval.runner import EpisodeRunner, now
 from boundarybench.eval.scoring import score_episode
 from boundarybench.models.diagnostics import DiagnosticMode
-from boundarybench.models.llm import FrozenModel
+from boundarybench.models.llm import FrozenModel, ProviderError
 from boundarybench.retrieval.engine import Condition
 
 
@@ -80,11 +81,12 @@ def load_plan(path: Path):
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=WARNING)
-    parser.add_argument("--provider", choices=("openai",), required=True)
+    parser.add_argument("--provider", choices=("openai", "ollama"), required=True)
     parser.add_argument("--model", required=True, help="explicit Chat Completions model supporting the recorded settings")
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-live-api", action="store_true", help="explicit authorization for paid live requests")
+    parser.add_argument("--allow-local-model", action="store_true", help="explicit authorization for local Ollama inference")
     args = parser.parse_args(argv)
     print("\n" + "=" * 72 + "\n" + WARNING + "\n" + "=" * 72, flush=True)
     try:
@@ -98,13 +100,17 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Provider: {args.provider}; model: {config.model}", flush=True)
         print(f"Settings: {canonical_json(config)}", flush=True)
         print(f"Upper bounds: {max_calls} model invocations; {max_calls * (1 + config.max_retries)} HTTP attempts including retries.", flush=True)
-        if not args.allow_live_api:
-            print("No requests made. Explicit --allow-live-api authorization is required.", flush=True)
+        local = args.provider == "ollama"
+        allowed = args.allow_local_model if local else args.allow_live_api
+        required_flag = "--allow-local-model" if local else "--allow-live-api"
+        if not allowed:
+            print(f"No requests made. Explicit {required_flag} authorization is required.", flush=True)
             return 2
-        if not os.environ.get("OPENAI_API_KEY", "").strip():
+        if not local and not os.environ.get("OPENAI_API_KEY", "").strip():
             raise ValueError("OPENAI_API_KEY is not configured; no requests made")
         acceptance = ACCEPTANCE_PATH.read_text(encoding="utf-8")
-        provider = OpenAIProvider(config)
+        provider = (OllamaProvider(config, runtime_snapshot=discover_local_model(config.model))
+                    if local else OpenAIProvider(config))
         run_manifest = {
             "development_only": True, "warning": WARNING, "created_at": now(),
             "provider": provider.metadata, "pilot_manifest_source": source,
@@ -113,7 +119,8 @@ def main(argv: list[str] | None = None) -> int:
             "acceptance_criteria_source": acceptance, "acceptance_criteria_hash": digest(acceptance),
             "selected_cases": tuple(cases[case_id] for case_id in dict.fromkeys(p.case_id for p in plan)),
             "base_corpus": DOCUMENTS, "users": USERS,
-            "human_review_status": "pending", "allow_live_api": True,
+            "human_review_status": "pending", "allow_live_api": args.allow_live_api,
+            "allow_local_model": args.allow_local_model,
         }
         args.output.mkdir(parents=True, exist_ok=False)
         write_jsonl_exclusive(args.output / "run_manifest.jsonl", [run_manifest])
@@ -140,7 +147,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Development episodes attempted: {len(records)}; completed: {len(records) - errors}; errors: {errors}.", flush=True)
         print("Human review pending. Share only human_review.jsonl with initial reviewers.", flush=True)
         return 1 if errors else 0
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, ProviderError) as exc:
         print(f"Development pilot stopped: {exc}", file=sys.stderr)
         return 2
 

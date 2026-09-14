@@ -1,0 +1,39 @@
+# DEVELOPMENT ONLY: same 19 episodes as dev_pilot.toml, one local Qwen model.
+# The longer I/O timeout accommodates model loading; retries are disabled to
+# avoid duplicate local work after a timeout. No prompt, score or turn-budget changes.
+development_only = true
+conditions = ["A", "C"]
+case_ids = [
+  "dev-learning", "dev-answer-key", "dev-role-impersonation", "dev-multiturn",
+  "dev-inference", "dev-injection", "dev-instructor-key", "dev-injection-clean",
+]
+
+[provider_settings]
+temperature = 0.0
+top_p = 1.0
+seed = 17
+max_completion_tokens = 2048
+timeout_seconds = 120.0
+max_retries = 0
+retry_base_seconds = 0.5
+max_retry_delay_seconds = 30.0
+
+[budgets]
+max_results = 3
+max_searches_per_turn = 2
+max_model_iterations_per_turn = 3
+
+[[diagnostics]]
+case_id = "dev-answer-key"
+condition = "A"
+mode = "no-policy"
+
+[[diagnostics]]
+case_id = "dev-answer-key"
+condition = "A"
+mode = "empty-context"
+
+[[diagnostics]]
+case_id = "dev-answer-key"
+condition = "A"
+mode = "deny-all"

@@ -143,7 +143,7 @@ def wire_request(request: ModelRequest, config: OpenAIConfig) -> str:
     return encode(payload)
 
 
-def parse_response(raw: str, payload: str, attempts: tuple[ProviderAttempt, ...]) -> ModelResponse:
+def parse_response(raw: str, payload: str, attempts: tuple[ProviderAttempt, ...], *, provider_name: str = "OpenAI") -> ModelResponse:
     usage = None
     try:
         data = json.loads(raw)
@@ -181,17 +181,22 @@ def parse_response(raw: str, payload: str, attempts: tuple[ProviderAttempt, ...]
                              raw_response=raw, usage=usage, finish_reason=finish,
                              provider_request_json=payload, retry_count=len(attempts) - 1, attempts=attempts)
     except (ValueError, KeyError, TypeError, AttributeError, IndexError) as exc:
-        raise ProviderError("OpenAI model-protocol failure: " + type(exc).__name__, raw_response=raw,
+        raise ProviderError(provider_name + " model-protocol failure: " + type(exc).__name__, raw_response=raw,
                             usage=usage, provider_request_json=payload, attempts=attempts) from None
 
 
 class OpenAIProvider:
+    name = "OpenAI"
+
     def __init__(self, config: OpenAIConfig, *, transport: Callable = send_https,
                  sleep: Callable = time.sleep, jitter: Callable = random.random):
         self.config = config
         self.transport = transport
         self.sleep = sleep
         self.jitter = jitter
+
+    def request_json(self, request: ModelRequest) -> str:
+        return wire_request(request, self.config)
 
     @property
     def metadata(self) -> ProviderMetadata:
@@ -221,15 +226,17 @@ class OpenAISession:
     def complete(self, request: ModelRequest) -> ModelResponse:
         provider = self.provider
         config = provider.config
-        payload = wire_request(request, config)
+        payload = provider.request_json(request)
         attempts = []
         for index in range(config.max_retries + 1):
             result = None
             error_type = None
             try:
                 result = provider.transport(payload.encode("utf-8"), self._api_key, config.timeout_seconds)
-                result = HTTPResponse(result.status, result.body.replace(self._api_key, "[REDACTED]"),
-                                      {k.lower(): v.replace(self._api_key, "[REDACTED]") for k, v in result.headers.items()})
+                def redact(value: str) -> str:
+                    return value.replace(self._api_key, "[REDACTED]") if self._api_key else value
+                result = HTTPResponse(result.status, redact(result.body),
+                                      {k.lower(): redact(v) for k, v in result.headers.items()})
                 transient = transient_http(result)
             except (OSError, URLError) as exc:
                 error_type = type(exc).__name__
@@ -249,9 +256,9 @@ class OpenAISession:
                 raw_response=result.body if result else None, retry_delay_seconds=delay,
             ))
             if success:
-                return parse_response(result.body, payload, tuple(attempts))
+                return parse_response(result.body, payload, tuple(attempts), provider_name=provider.name)
             if delay is None:
-                raise ProviderError("OpenAI request failed: " + (str(result.status) if result else error_type),
+                raise ProviderError(provider.name + " request failed: " + (str(result.status) if result else error_type),
                                     raw_response=result.body if result else None,
                                     provider_request_json=payload, attempts=tuple(attempts))
             provider.sleep(delay)
