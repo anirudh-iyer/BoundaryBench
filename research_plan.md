@@ -21,9 +21,11 @@ not V1 conditions.
 
 The current deliverable adds development-only live-pilot support to the small,
 explicitly labelled development set. The proposed 96 held-out cases / 384 episodes
-remain a future design, not an existing benchmark. One OpenAI adapter is implemented;
-no concrete live model is selected or called. Live execution requires separately
-supplied user authorization through `--allow-live-api` and environment credentials.
+remain a future design, not an existing benchmark. The Chat Completions adapter
+supports paid OpenAI execution and a local Ollama compatibility profile. Following
+the user's request for an open-source model, a 19-episode local Qwen2.5 7B pilot
+completed with zero operational errors. No paid OpenAI calls were made. Paid
+execution retains `--allow-live-api`; local inference uses `--allow-local-model`.
 The original scaffold-only stopping point in PLAN.md is superseded by this
 development deliverable; its research constraints continue to apply.
 
@@ -84,7 +86,10 @@ review file, withholding the private mapping and automatic results; (3) conduct
 human review; (4) import/adjudicate judgements while preserving initial ratings;
 (5) only then join to conditions and automatic scores for analysis. The export
 and private join data are implemented; human import/adjudication remains pending.
-Current runs are offline control checks, not a live-model experiment.
+Offline checks and one explicitly labelled local development pilot now exist.
+The [published pilot bundle](reports/development/qwen2.5-7b-001/README.md) contains
+condition-revealing results, not independent human ratings. Reviewers must complete
+initial ratings before consulting it; public availability limits practical blinding.
 
 Each rate reports numerator, resolved denominator, eligible episode count,
 unresolved count, and bounds assigning unresolved cases both outcomes. Empty
@@ -142,7 +147,10 @@ no-policy, empty-context, and deny-all diagnostics. Acceptance criteria are fixe
 in that protocol and snapshotted before the first request. Revise and
 freeze the prompts, budgets, scoring rubric, family design, and analysis plan
 using development evidence before authoring/freezing held-out cases. Pilot support
-is implemented; an actual pilot requires explicit user authorization. Held-out
+is implemented and the first local pilot is complete. Its engineering audit found
+unexercised diagnostic retrieval paths, authorized instructor utility failures and
+different responses to identical requests. Independent human review and follow-up
+development checks remain required; the acceptance criteria were not relaxed. Held-out
 generation is outside this deliverable. Do not alter later held-out prompts,
 facts, scoring, model settings, budgets or analysis in response to held-out outcomes.
 

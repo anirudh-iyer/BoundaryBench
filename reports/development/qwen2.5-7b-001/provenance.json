@@ -1,0 +1,13 @@
+{
+  "development_only": true,
+  "source_run_directory": "results/dev-pilot-local-001",
+  "implementation_commit": "1680e35d4dc24805b1be71961125e5c7fbd4acbb",
+  "implementation_hash": "b841e63806b6adf47f8881368db9e07d1142e37750f9429051b3059facfc236c",
+  "acceptance_criteria_hash": "541ef9bce620227110468d2a50e6cde2f6ca17a39b3a25b56eade8172426cab5",
+  "raw_records_copied_byte_for_byte": true,
+  "episode_count": 19,
+  "publication_authorized_by_user": true,
+  "human_review_status": "not completed",
+  "published_report_edits": "Sharing labels only; measured values and observations unchanged.",
+  "excluded": "Private reviewer export, review join mapping, blinding key, runtime logs and model binaries."
+}

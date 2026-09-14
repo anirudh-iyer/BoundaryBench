@@ -14,11 +14,14 @@ a provider-independent message/tool interface, deterministic offline doubles,
 a bounded episode runner, create-only raw JSONL, provisional automatic scoring,
 explicit-denominator general and target metrics, and independent initial human
 review with a separate private join mapping. One OpenAI Chat Completions adapter,
-development diagnostics, a gated small-pilot CLI, and private audit/report exports
-are implemented and tested with mocked responses.
+development diagnostics, a gated small-pilot CLI, private audit/report exports,
+and a local Ollama compatibility profile are implemented. **147 offline tests pass.**
 
-**No live model has been called. No held-out cases or empirical model results
-have been generated.** The planned 96-case benchmark remains future work.
+A **19-episode local development pilot** ran with Qwen2.5 7B Instruct:
+19 completed, zero operational errors. The [published development bundle](reports/development/qwen2.5-7b-001/README.md)
+contains raw traces, configuration, provisional scores and reports. Independent
+human review is pending. **No held-out cases or final research findings exist.**
+The planned 96-case benchmark remains future work.
 See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for validation and next steps.
 
 ## Run locally
@@ -64,14 +67,30 @@ To validate and print the plan without making requests:
 .venv/Scripts/python.exe -m boundarybench.live_dev --provider openai --model <explicit-model> --manifest configs/dev_pilot.toml --output results/dev-pilot-001
 ```
 
-Live execution additionally requires `OPENAI_API_KEY` in the environment and the
+Paid OpenAI execution additionally requires `OPENAI_API_KEY` in the environment and the
 user's explicit `--allow-live-api` authorization. The output must be a new
 directory. Model and sampling compatibility are checked by the provider without
-silent fallback. No live execution has been authorized for this implementation.
+silent fallback. No paid OpenAI calls have been made.
 See the [fixed pilot protocol](docs/development_pilot.md) for settings, acceptance
 criteria, retry semantics and artifact layout. The report is generated in the
 run's private directory only after execution; human review remains independent.
 Local results and `.env` files are ignored by Git; keys are never loaded from files.
+
+The local profile uses `configs/dev_pilot_local.toml` and
+`configs/qwen2.5-7b.Modelfile`. It keeps the same episodes and experimental budgets,
+with seed 17, a 120-second I/O timeout and zero retries (at most 69 requests).
+After starting Ollama and creating the local model, a new local run uses:
+
+```text
+.venv/Scripts/python.exe -X utf8 -m boundarybench.live_dev --provider ollama --model boundarybench-qwen2.5-7b:dev --manifest configs/dev_pilot_local.toml --output results/dev-pilot-local-002 --allow-local-model
+```
+
+Local inference needs no API key. The profile connects only to loopback and records
+the runtime version, model digest, template and parameters. The first run's model
+cache remains in ignored `results/.runtime/ollama-models`; set `OLLAMA_MODELS` to
+that directory when starting Ollama to reuse it. Its temporary server was stopped
+after the run. Publication copies are under `reports/development`, separate from
+local runtime files and private reviewer keys/mapping.
 
 `no-policy`, `empty-context` and `deny-all` are DEVELOPMENT ONLY interventions,
 separate from A/B/C/D. Empty-context uses no retrieval corpus; deny-all retains

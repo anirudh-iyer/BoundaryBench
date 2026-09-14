@@ -15,12 +15,15 @@
 - [x] Provisional scoring, blinded human-review export, and explicit denominators
 - [x] Operational error accounting and literal cumulative disclosure tests
 - [x] One environment-only OpenAI adapter with mocked tool/retry/error tests
+- [x] Local Ollama compatibility profile, pinned runtime/model metadata and 11 mocked tests
 - [ ] Human adjudication/import and reviewer calibration
 - [x] Development no-policy/empty-context/deny-all diagnostics, excluded from primary tables
 - [x] Gated 19-episode manifest/CLI and private audit/report exports
 - [x] Fixed pre-result pilot acceptance criteria
-- [ ] Explicitly authorized small live pilot and independent human inspection
+- [x] Requested 19-episode local Qwen2.5 7B pilot and engineering trace audit
+- [x] Development report, raw traces and provisional results prepared for publication
+- [ ] Independent human inspection and unresolved acceptance checks
 - [ ] Frozen prompts, rubric, target families, and analysis plan
 - [ ] Held-out corpus/cases (do not generate during this deliverable)
 - [ ] Family-aware confidence intervals and paired analysis
-- [ ] Concrete model configuration and pilot run
+- [x] Concrete local model configuration and first pilot run

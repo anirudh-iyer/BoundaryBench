@@ -23,6 +23,14 @@ JSON request bodies, raw responses, usage, finish reasons and bounded transient
 retry histories. Credentials and Authorization headers are never persisted.
 The adapter contains no authorization logic and has no model/prompt fallback.
 
+The local Ollama profile reuses request mapping, response parsing and attempt
+recording. It maps the output budget to `max_tokens`, connects only to literal
+loopback without proxy/redirect/credentials, and records the runtime version,
+installed-model digest, parameters and upstream template. A separate local gate
+cannot authorize paid calls. Its preflight requires installed weights, advertised
+tool support and an explicit context of at least 8192 tokens; it never pulls a
+model or falls back to a hosted endpoint during an episode.
+
 The runner owns the user registry, body-only injection overrides, conversation,
 tool budgets, and traces. `search` accepts only a query. Full request snapshots
 show exactly what was submitted, including previous turns and tool calls.
