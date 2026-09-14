@@ -17,7 +17,11 @@ disclosure are separate facts.
 `ModelRequest` messages/tool definitions and return `ModelResponse` with raw
 response and optional usage. The offline provider can replay prescribed responses
 and errors or perform deterministic search/echo. It contains no condition logic
-or evaluator expectations. Concrete live adapters remain unimplemented.
+or evaluator expectations. The OpenAI Chat Completions adapter maps the same
+interface to HTTPS, sourcing its key only from the environment. It records exact
+JSON request bodies, raw responses, usage, finish reasons and bounded transient
+retry histories. Credentials and Authorization headers are never persisted.
+The adapter contains no authorization logic and has no model/prompt fallback.
 
 The runner owns the user registry, body-only injection overrides, conversation,
 tool budgets, and traces. `search` accepts only a query. Full request snapshots
@@ -27,6 +31,19 @@ unreached scripted turns. No retries silently change the episode's treatment.
 Provider metadata includes configuration, supported sampling settings, and seed
 when applicable. Manifests hash corpus variants, cases, identity, prompts, tool
 schema, policy, configuration, and implementation, and record dependency versions.
+
+`live_dev` is a separate opt-in command, accepting only a small development
+manifest. Without `--allow-live-api`, it prints the validated plan and makes no
+requests. Before execution it snapshots the resolved plan and fixed acceptance
+protocol. Normal scores, diagnostic scores, initial human review, private joins,
+private per-episode audits and a descriptive private report are separate artifacts.
+Only the reviewer artifact is initially shared.
+
+Development modes are separate from `Condition`: no-policy substitutes a neutral
+task prompt, empty-context supplies an empty corpus, and deny-all keeps unfiltered
+traces but records universal result suppression without policy block credit.
+The runner rejects diagnostic held-out cases. Raw schema 3 and scorer version 3
+carry explicit modes; primary aggregate functions reject non-normal scores.
 
 `RawRecordStore` uses exclusive-create JSONL shards and flushes them to disk.
 It cannot provide OS-level immutable storage or recover a process killed before

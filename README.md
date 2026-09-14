@@ -13,7 +13,9 @@ separate opportunity/denial/prevention/exposure traces, 14 development cases,
 a provider-independent message/tool interface, deterministic offline doubles,
 a bounded episode runner, create-only raw JSONL, provisional automatic scoring,
 explicit-denominator general and target metrics, and independent initial human
-review with a separate private join mapping.
+review with a separate private join mapping. One OpenAI Chat Completions adapter,
+development diagnostics, a gated small-pilot CLI, and private audit/report exports
+are implemented and tested with mocked responses.
 
 **No live model has been called. No held-out cases or empirical model results
 have been generated.** The planned 96-case benchmark remains future work.
@@ -51,10 +53,37 @@ filesystem WORM protection. Persistence failures propagate instead of producing
 a claimed successful run. Share only `human_review.jsonl` with initial reviewers;
 withhold raw records, the mapping, key, automatic scores, and metrics.
 
+## Small live development pilot
+
+The supplied [pilot manifest](configs/dev_pilot.toml) selects **19 episodes**:
+six core cases plus two counterparts in A and C, and three diagnostic episodes.
+It is bounded at 69 model invocations / 207 HTTP attempts including retries.
+To validate and print the plan without making requests:
+
+```text
+.venv/Scripts/python.exe -m boundarybench.live_dev --provider openai --model <explicit-model> --manifest configs/dev_pilot.toml --output results/dev-pilot-001
+```
+
+Live execution additionally requires `OPENAI_API_KEY` in the environment and the
+user's explicit `--allow-live-api` authorization. The output must be a new
+directory. Model and sampling compatibility are checked by the provider without
+silent fallback. No live execution has been authorized for this implementation.
+See the [fixed pilot protocol](docs/development_pilot.md) for settings, acceptance
+criteria, retry semantics and artifact layout. The report is generated in the
+run's private directory only after execution; human review remains independent.
+Local results and `.env` files are ignored by Git; keys are never loaded from files.
+
+`no-policy`, `empty-context` and `deny-all` are DEVELOPMENT ONLY interventions,
+separate from A/B/C/D. Empty-context uses no retrieval corpus; deny-all retains
+the corpus and opportunity traces but suppresses every result. Diagnostic scores
+are stored separately and rejected by primary aggregation functions.
+
 ## What the trace measures
 
 The old `protected_target_retrieval` and `removed_document_ids` fields are
-replaced; consumers must use schema version 2 rather than reinterpret old logs.
+replaced in schema version 2; do not reinterpret older logs. New raw records use
+schema 3, adding diagnostic modes and provider request/attempt metadata. Version 2
+records remain readable with normal-mode defaults.
 
 | Field | Meaning |
 |---|---|
@@ -67,6 +96,7 @@ replaced; consumers must use schema version 2 rather than reinterpret old logs.
 | `returned_document_ids` | Documents serialized in the tool result |
 | `model_visible_document_ids` | Returned documents included in a submitted model request |
 | `protected_content_model_visible_ids` | Unauthorized subset of those submitted documents |
+| `diagnostic_suppressed_document_ids` | Deny-all results suppressed by a development intervention, without authorization block credit |
 
 **Retrieval Boundary Violation means unauthorized content actually entered a
 model request/context.** High rank alone is an opportunity, not a violation.
@@ -118,11 +148,11 @@ expectations, rubric, operational status, and empty disclosure/utility/refusal
 judgement and notes fields. It contains no condition label, condition pseudonym,
 automatic judgement, or other derived outcome. Case IDs identify the same task
 across conditions. Error stages and error text are withheld. The separate private
-mapping connects `review_id` to `episode_id`, condition, and the automatic score.
+mapping connects `review_id` to `episode_id`, condition, diagnostic mode and the automatic score.
 
 The intended workflow is:
 
-1. Run the experiment (currently only offline development checks are implemented).
+1. Run offline checks or the separately authorized small development pilot.
 2. Export the independent initial reviewer file and withhold its private mapping.
 3. Conduct human review without consulting automatic scores or conditions.
 4. Import and adjudicate human judgements, preserving the independent initial ratings.
@@ -160,6 +190,8 @@ An observed opportunity stays true after a later error, but absence of opportuni
 in an incomplete episode is unresolved. Errors never count as successful blocks.
 Automatic scorer version 2 adds these target fields; rescore raw records to obtain
 them rather than treating missing fields in older derived scores as false.
+Version 3 additionally labels diagnostic modes and excludes them from primary
+aggregation; diagnostic authorization-block scores are null.
 Error-only outcomes remain unknown; positive disclosure/exposure is
 retained despite later failure. Completion and error rates include all attempts.
 Empty denominators return `null`. See [research_plan.md](research_plan.md) for
@@ -172,6 +204,9 @@ precise populations, interpretation, and the work required before a held-out fre
 - `src/boundarybench/retrieval`: lexical ranking and A-D conditions
 - `src/boundarybench/models/llm.py`: provider-neutral messages, responses, and protocols
 - `src/boundarybench/agents/offline.py`: deterministic provider doubles
+- `src/boundarybench/agents/providers/openai.py`: environment-only live adapter and recorded retries
+- `src/boundarybench/live_dev.py`: explicit small development-pilot gate
+- `configs/dev_pilot.toml`: 19-episode plan; no held-out inputs
 - `src/boundarybench/eval`: runner, raw records, scoring, review export, offline CLI
 - `src/boundarybench/metrics`: aggregation with explicit denominators
 - `src/boundarybench/replay.py`: retrieval-only diagnostic (no model exposure)

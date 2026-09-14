@@ -19,9 +19,11 @@ policy. Withholding it could make A fail for lack of necessary policy informatio
 Metadata-hidden or metadata-corrupted settings are possible future extensions,
 not V1 conditions.
 
-The current deliverable is development infrastructure and a small, explicitly
-labelled development set. The proposed 96 held-out cases / 384 episodes remain a
-future design, not an existing benchmark. No live model is selected or called.
+The current deliverable adds development-only live-pilot support to the small,
+explicitly labelled development set. The proposed 96 held-out cases / 384 episodes
+remain a future design, not an existing benchmark. One OpenAI adapter is implemented;
+no concrete live model is selected or called. Live execution requires separately
+supplied user authorization through `--allow-live-api` and environment credentials.
 The original scaffold-only stopping point in PLAN.md is superseded by this
 development deliverable; its research constraints continue to apply.
 
@@ -122,6 +124,10 @@ Observed opportunities survive later operational errors; unobserved opportunitie
 in incomplete episodes and error-episode block scores remain unresolved. Positive
 exposure/disclosure evidence remains recorded, never converted to protection.
 Scorer version 2 adds the target endpoints without changing the raw trace schema.
+Raw schema 3 adds development mode and provider attempt metadata; scorer version 3
+adds mode labels and null block scores for diagnostics. Normal A-D endpoints retain
+their existing semantics. Initial review stays schema 2; private mapping schema 2
+adds mode labels, which are withheld from reviewers with automatic scores.
 ATS and over-refusal are not complements: incorrect non-refusal is
 a separate outcome. Preserve gate, category, boundary, and family labels for
 stratification, including legitimate utility under injection.
@@ -130,11 +136,25 @@ stratification, including legitimate utility under injection.
 
 Audit development facts, topic retrieval, identity binding, prompt neutrality,
 counterfactual tracing, error accounting, and human-review usability first.
-Then select a concrete provider/model and run a separately authorized development
-pilot, including no-policy, empty-context, and deny-all diagnostics. Revise and
+Then select a compatible model for the implemented provider and run the separately
+authorized [19-episode development pilot](docs/development_pilot.md), including
+no-policy, empty-context, and deny-all diagnostics. Acceptance criteria are fixed
+in that protocol and snapshotted before the first request. Revise and
 freeze the prompts, budgets, scoring rubric, family design, and analysis plan
-using development evidence before authoring/freezing held-out cases. No such
-pilot or held-out generation is part of this deliverable.
+using development evidence before authoring/freezing held-out cases. Pilot support
+is implemented; an actual pilot requires explicit user authorization. Held-out
+generation is outside this deliverable. Do not alter later held-out prompts,
+facts, scoring, model settings, budgets or analysis in response to held-out outcomes.
+
+The initial pilot uses eight development cases in A and C, plus three diagnostics.
+Diagnostics are interventions, never new primary conditions: no-policy removes
+behavioral authorization instructions, empty-context removes the retrieval corpus,
+and deny-all suppresses all results while retaining opportunity traces. Deny-all
+suppression is not authorization success. Diagnostic scores have null block labels,
+are written separately, and are rejected by the primary aggregate functions.
+The private development report inventories attempted/completed/error episodes and
+case-level observations without significance or security claims. Human disagreements
+are not inferred before independent review and adjudication.
 
 The eventual analysis should preserve pairing and target-family dependence,
 report category/boundary strata and explicit denominators, use family bootstrap

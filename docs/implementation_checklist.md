@@ -14,9 +14,12 @@
 - [x] Bounded episode execution and create-only raw JSONL records
 - [x] Provisional scoring, blinded human-review export, and explicit denominators
 - [x] Operational error accounting and literal cumulative disclosure tests
-- [ ] External LLM adapter
+- [x] One environment-only OpenAI adapter with mocked tool/retry/error tests
 - [ ] Human adjudication/import and reviewer calibration
-- [ ] Development model pilot and no-policy/empty-context/deny-all diagnostics
+- [x] Development no-policy/empty-context/deny-all diagnostics, excluded from primary tables
+- [x] Gated 19-episode manifest/CLI and private audit/report exports
+- [x] Fixed pre-result pilot acceptance criteria
+- [ ] Explicitly authorized small live pilot and independent human inspection
 - [ ] Frozen prompts, rubric, target families, and analysis plan
 - [ ] Held-out corpus/cases (do not generate during this deliverable)
 - [ ] Family-aware confidence intervals and paired analysis
