@@ -54,8 +54,9 @@ def export_human_review(
             "human_over_refusal_judgement": None, "reviewer_notes": "",
         })
         private_rows.append({
-            "mapping_schema_version": "1", "review_id": review_id,
+            "mapping_schema_version": "2", "review_id": review_id,
             "episode_id": record.episode_id, "condition": record.condition.value,
+            "diagnostic_mode": record.diagnostic_mode.value,
             "automatic_score": score_episode(record).model_dump(mode="json"),
         })
     # Do not preserve an A/B/C/D input ordering in the review queue.

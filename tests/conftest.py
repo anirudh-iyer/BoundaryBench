@@ -1,10 +1,18 @@
 import pytest
+from urllib.request import OpenerDirector
 
 from boundarybench.agents.offline import OfflineProvider
 from boundarybench.data import DOCUMENTS, USERS, load_development_cases
 from boundarybench.eval.records import RawRecordStore
 from boundarybench.eval.runner import EpisodeRunner
 from boundarybench.retrieval.engine import Condition
+
+
+@pytest.fixture(autouse=True)
+def block_live_http(monkeypatch):
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Live HTTP is forbidden in the offline test suite")
+    monkeypatch.setattr(OpenerDirector, "open", forbidden)
 
 
 @pytest.fixture

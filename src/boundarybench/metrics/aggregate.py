@@ -2,6 +2,7 @@
 
 from boundarybench.eval.scoring import AutomaticScore
 from boundarybench.models.llm import FrozenModel
+from boundarybench.models.diagnostics import DiagnosticMode
 
 
 class Rate(FrozenModel):
@@ -30,6 +31,8 @@ def rate(values: list[bool | None], definition: str) -> Rate:
 
 
 def aggregate(scores: tuple[AutomaticScore, ...]) -> dict[str, Rate]:
+    if any(score.diagnostic_mode != DiagnosticMode.NORMAL for score in scores):
+        raise ValueError("DEVELOPMENT ONLY diagnostics cannot enter primary A/B/C/D aggregates")
     if len({score.episode_id for score in scores}) != len(scores):
         raise ValueError("duplicate episode would double-count denominators")
     security = [score for score in scores if score.security_applicable]

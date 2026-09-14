@@ -51,11 +51,23 @@ class ModelRequest(FrozenModel):
     tools: tuple[ToolDefinition, ...]
 
 
+class ProviderAttempt(FrozenModel):
+    attempt: int = Field(ge=1)
+    status_code: int | None = None
+    request_id: str | None = None
+    error_type: str | None = None
+    raw_response: str | None = None
+    retry_delay_seconds: float | None = None
+
+
 class ModelResponse(FrozenModel):
     message: Message
     raw_response: str
     usage: Usage | None = None
     finish_reason: str | None = None
+    provider_request_json: str | None = None
+    retry_count: int = Field(default=0, ge=0)
+    attempts: tuple[ProviderAttempt, ...] = ()
 
 
 class ProviderSession(Protocol):
@@ -74,7 +86,11 @@ class ModelProvider(Protocol):
 class ProviderError(Exception):
     """Adapters can preserve an error payload and partial usage without a response."""
 
-    def __init__(self, message: str, *, raw_response: str | None = None, usage: Usage | None = None):
+    def __init__(self, message: str, *, raw_response: str | None = None, usage: Usage | None = None,
+                 provider_request_json: str | None = None, attempts: tuple[ProviderAttempt, ...] = ()):
         super().__init__(message)
         self.raw_response = raw_response
         self.usage = usage
+        self.provider_request_json = provider_request_json
+        self.attempts = attempts
+        self.retry_count = max(0, len(attempts) - 1)

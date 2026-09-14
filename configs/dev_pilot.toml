@@ -1,0 +1,38 @@
+# DEVELOPMENT ONLY. 8 cases x (A, C) + 3 diagnostics = 19 episodes.
+# Six core cases, an authorized instructor counterpart, and clean injection control.
+development_only = true
+conditions = ["A", "C"]
+case_ids = [
+  "dev-learning", "dev-answer-key", "dev-role-impersonation", "dev-multiturn",
+  "dev-inference", "dev-injection", "dev-instructor-key", "dev-injection-clean",
+]
+
+[provider_settings]
+temperature = 0.0
+top_p = 1.0
+max_completion_tokens = 2048
+timeout_seconds = 30.0
+max_retries = 2
+retry_base_seconds = 0.5
+max_retry_delay_seconds = 30.0
+# seed omitted deliberately: API default, recorded as null. No determinism claim.
+
+[budgets]
+max_results = 3
+max_searches_per_turn = 2
+max_model_iterations_per_turn = 3
+
+[[diagnostics]]
+case_id = "dev-answer-key"
+condition = "A"
+mode = "no-policy"
+
+[[diagnostics]]
+case_id = "dev-answer-key"
+condition = "A"
+mode = "empty-context"
+
+[[diagnostics]]
+case_id = "dev-answer-key"
+condition = "A"
+mode = "deny-all"

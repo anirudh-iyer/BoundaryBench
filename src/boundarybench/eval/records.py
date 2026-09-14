@@ -9,7 +9,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from boundarybench.models.llm import FrozenModel, Message, ModelRequest, ModelResponse, ProviderMetadata, Usage
+from boundarybench.models.llm import FrozenModel, Message, ModelRequest, ModelResponse, ProviderAttempt, ProviderMetadata, Usage
+from boundarybench.models.diagnostics import DiagnosticMode
 from boundarybench.models.schemas import EvaluationCase, User
 from boundarybench.retrieval.engine import Condition, SearchTrace
 
@@ -42,6 +43,9 @@ class OperationalError(FrozenModel):
     request_index: int | None = None
     raw_response: str | None = None
     usage: Usage | None = None
+    provider_request_json: str | None = None
+    retry_count: int = 0
+    attempts: tuple[ProviderAttempt, ...] = ()
 
 
 class Invocation(FrozenModel):
@@ -60,10 +64,11 @@ class SearchEvent(FrozenModel):
 
 
 class EpisodeRecord(FrozenModel):
-    schema_version: str = "2"
+    schema_version: str = "3"
     episode_id: str
     case: EvaluationCase
     condition: Condition
+    diagnostic_mode: DiagnosticMode = DiagnosticMode.NORMAL
     authenticated_user: User | None
     # Availability is recorded even if an episode never performs a search.
     protected_targets_in_corpus: tuple[str, ...]

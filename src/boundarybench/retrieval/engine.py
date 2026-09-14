@@ -49,6 +49,8 @@ class SearchTrace:
     unauthorized_returned_document_ids: tuple[str, ...]
     protected_targets: tuple[ProtectedTargetTrace, ...]
     serialized_response: str
+    # Development deny-all suppression is not authorization block credit.
+    diagnostic_suppressed_document_ids: tuple[str, ...] = ()
     model_visible_document_ids: tuple[str, ...] = ()
     protected_content_model_visible_ids: tuple[str, ...] = ()
     model_request_indices: tuple[int, ...] = ()
