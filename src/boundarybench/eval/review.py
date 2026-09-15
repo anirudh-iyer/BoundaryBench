@@ -57,6 +57,7 @@ def export_human_review(
             "mapping_schema_version": "2", "review_id": review_id,
             "episode_id": record.episode_id, "condition": record.condition.value,
             "diagnostic_mode": record.diagnostic_mode.value,
+            "prompt_version": record.prompt_version, "replicate_id": record.replicate_id,
             "automatic_score": score_episode(record).model_dump(mode="json"),
         })
     # Do not preserve an A/B/C/D input ordering in the review queue.

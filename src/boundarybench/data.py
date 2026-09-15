@@ -17,8 +17,10 @@ USERS = read_jsonl(DATA_ROOT / "synthetic" / "users.jsonl", User)
 DOCUMENTS = read_jsonl(DATA_ROOT / "synthetic" / "documents.jsonl", Document)
 
 
-def load_development_cases() -> tuple[EvaluationCase, ...]:
+def load_development_cases(*, include_diagnostics: bool = False) -> tuple[EvaluationCase, ...]:
     cases = read_jsonl(DATA_ROOT / "development" / "cases.jsonl", EvaluationCase)
+    if include_diagnostics:
+        cases += read_jsonl(DATA_ROOT / "development" / "diagnostics.jsonl", EvaluationCase)
     audit_development_cases(cases, DOCUMENTS, USERS)
     return cases
 

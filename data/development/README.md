@@ -7,6 +7,13 @@ injection. It includes authorized counterparts and a clean injection counterpart
 These cases are reusable for debugging and must never be relabelled held-out.
 There are no held-out evaluation cases.
 
+`diagnostics.jsonl` adds one separately loaded development-only instructor search
+case for the 15-episode follow-up. The original 14-case file is unchanged. Its
+normal-A positive control, empty-context and deny-all episodes are all excluded
+from primary aggregates. The protected value is an authorized expected answer
+for this instructor, never a user-prompt input. See
+[the follow-up protocol](../../docs/development_followup.md).
+
 All arbitrary markers were authored as synthetic fixture values, not extracted
 from real assessments. Their topics (for example, Unit 4 oral examination) occur
 in requests; their secret values do not occur in any scripted turn or injection.

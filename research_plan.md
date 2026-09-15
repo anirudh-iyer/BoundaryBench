@@ -3,7 +3,7 @@
 ## Primary interpretation and development scope
 
 V1 compares **A: behavioral/system-prompt policy without external authorization**
-with **B/C/D: externally enforced authorization**. Every condition receives the
+with **C: externally enforced authorization at the tool boundary**. Every condition receives the
 same policy, trusted identity, model interface, and retrieval serialization.
 B filters before ranking, C checks at the tool boundary, and D does both.
 Ranking scores are independent of filtering. B/C/D protect one shared access
@@ -20,8 +20,9 @@ Metadata-hidden or metadata-corrupted settings are possible future extensions,
 not V1 conditions.
 
 The current deliverable adds development-only live-pilot support to the small,
-explicitly labelled development set. The proposed 96 held-out cases / 384 episodes
-remain a future design, not an existing benchmark. The Chat Completions adapter
+explicitly labelled development set. The exact held-out case and episode counts
+remain undecided until follow-up review; earlier numerical sketches are not a
+freeze. The Chat Completions adapter
 supports paid OpenAI execution and a local Ollama compatibility profile. Following
 the user's request for an open-source model, a 19-episode local Qwen2.5 7B pilot
 completed with zero operational errors. No paid OpenAI calls were made. Paid
@@ -85,7 +86,9 @@ The intended order is: (1) run the experiment; (2) export the independent initia
 review file, withholding the private mapping and automatic results; (3) conduct
 human review; (4) import/adjudicate judgements while preserving initial ratings;
 (5) only then join to conditions and automatic scores for analysis. The export
-and private join data are implemented; human import/adjudication remains pending.
+and private join data are implemented. Validated human import now preserves
+independent ratings before a separate private join; actual human review and
+adjudication remain pending. See [human_review_import.md](docs/human_review_import.md).
 Offline checks and one explicitly labelled local development pilot now exist.
 The [published pilot bundle](reports/development/qwen2.5-7b-001/README.md) contains
 condition-revealing results, not independent human ratings. Reviewers must complete
@@ -133,11 +136,23 @@ Raw schema 3 adds development mode and provider attempt metadata; scorer version
 adds mode labels and null block scores for diagnostics. Normal A-D endpoints retain
 their existing semantics. Initial review stays schema 2; private mapping schema 2
 adds mode labels, which are withheld from reviewers with automatic scores.
+Raw schema 4 additionally records V1/V2 prompt version and development replicate
+ID, defaulting historical records to V1/no replicate. Scorer v4 excludes the
+normal-mode diagnostic positive control through explicit primary eligibility.
 ATS and over-refusal are not complements: incorrect non-refusal is
 a separate outcome. Preserve gate, category, boundary, and family labels for
 stratification, including legitimate utility under injection.
 
 ## Before the held-out freeze
+
+The [pre-freeze protocol](docs/pre_freeze_protocol.md) records required decisions
+before any held-out authoring. Current candidate direction: prefer repeated A/C
+evaluations over single A/B/C/D evaluations because B/C/D are not independent
+architectures in V1 and development showed response variability. Exact counts
+remain pending. The [15-episode follow-up](docs/development_followup.md) is
+implemented and offline-tested, with V2's identity-only clarification, three
+fresh-session multi-turn A/C repeats and instructor search diagnostics. It has
+not been executed. The published V1 pilot remains immutable historical evidence.
 
 Audit development facts, topic retrieval, identity binding, prompt neutrality,
 counterfactual tracing, error accounting, and human-review usability first.

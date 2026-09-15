@@ -2,7 +2,7 @@
 
 BoundaryBench is an empirical research harness for studying authorization around
 retrieval. V1's primary comparison is **system-prompt policy alone (A) versus
-external authorization (B/C/D)**. B/C/D share one policy function and one access
+external authorization at the tool boundary (C)**. B/C/D share one policy function and one access
 path, so identical outputs are expected under equivalent enforcement. V1 cannot
 rank their architectural security or demonstrate independent redundancy.
 
@@ -15,13 +15,15 @@ a bounded episode runner, create-only raw JSONL, provisional automatic scoring,
 explicit-denominator general and target metrics, and independent initial human
 review with a separate private join mapping. One OpenAI Chat Completions adapter,
 development diagnostics, a gated small-pilot CLI, private audit/report exports,
-and a local Ollama compatibility profile are implemented. **147 offline tests pass.**
+and a local Ollama compatibility profile are implemented. The 15-episode V2
+development follow-up, independent review import and pre-freeze protocol are also
+implemented. **199 offline tests pass.** The follow-up has not been executed.
 
 A **19-episode local development pilot** ran with Qwen2.5 7B Instruct:
 19 completed, zero operational errors. The [published development bundle](reports/development/qwen2.5-7b-001/README.md)
 contains raw traces, configuration, provisional scores and reports. Independent
 human review is pending. **No held-out cases or final research findings exist.**
-The planned 96-case benchmark remains future work.
+The final held-out case/episode counts remain pending follow-up review.
 See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for validation and next steps.
 
 ## Run locally
@@ -57,6 +59,13 @@ a claimed successful run. Share only `human_review.jsonl` with initial reviewers
 withhold raw records, the mapping, key, automatic scores, and metrics.
 
 ## Small live development pilot
+
+For the newly implemented **15-episode follow-up**, see
+[development_followup.md](docs/development_followup.md) and
+[dev_followup_local.toml](configs/dev_followup_local.toml). It uses A/C, V2's
+identity-only clarification, three fresh multi-turn replicates per condition and
+three instructor search diagnostics. The original pilot below is unchanged.
+The follow-up is implemented and offline-tested; no model execution has occurred.
 
 The supplied [pilot manifest](configs/dev_pilot.toml) selects **19 episodes**:
 six core cases plus two counterparts in A and C, and three diagnostic episodes.
@@ -101,8 +110,9 @@ are stored separately and rejected by primary aggregation functions.
 
 The old `protected_target_retrieval` and `removed_document_ids` fields are
 replaced in schema version 2; do not reinterpret older logs. New raw records use
-schema 3, adding diagnostic modes and provider request/attempt metadata. Version 2
-records remain readable with normal-mode defaults.
+schema 4, adding explicit prompt-version/replicate metadata to schema 3's
+diagnostic modes and provider request/attempt metadata. Historical schema 2/3
+records remain readable with V1/no-replicate defaults; schema 2 defaults to normal mode.
 
 | Field | Meaning |
 |---|---|
@@ -178,8 +188,11 @@ The intended workflow is:
 5. Only then join the adjudicated judgements to automatic scores and conditions
    through the private mapping for analysis.
 
-Human import/adjudication tooling and inferential statistics remain pending; this
-change implements the export and private join data. Blinding is not perfect:
+Human import is implemented through `python -m boundarybench.review_import`:
+see [input schemas and preservation order](docs/human_review_import.md).
+It validates immutable review inputs, preserves independent ratings and source
+hashes, then creates a separate private join. Actual ratings, adjudication and
+inferential statistics remain pending. Blinding is not perfect:
 behavioral differences and repeated tasks in transcripts may reveal an intervention.
 Review schema version 2 replaces the old condition-pseudonym/automatic-score
 export. Do not give old reviewer exports to independent initial reviewers.
@@ -211,6 +224,9 @@ Automatic scorer version 2 adds these target fields; rescore raw records to obta
 them rather than treating missing fields in older derived scores as false.
 Version 3 additionally labels diagnostic modes and excludes them from primary
 aggregation; diagnostic authorization-block scores are null.
+Version 4 also marks primary-analysis eligibility so the follow-up's normal-mode
+diagnostic positive control cannot enter primary aggregates. Existing endpoint
+semantics are unchanged.
 Error-only outcomes remain unknown; positive disclosure/exposure is
 retained despite later failure. Completion and error rates include all attempts.
 Empty denominators return `null`. See [research_plan.md](research_plan.md) for

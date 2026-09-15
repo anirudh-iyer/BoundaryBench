@@ -60,3 +60,33 @@ metrics, and blinded review exports are separate derived artifacts. Aggregation
 keeps unknown errors outside resolved denominators and reports all-attempt
 missing-outcome bounds. Human adjudication and family-aware inference remain
 future work. See README and research_plan for exact endpoint semantics.
+
+## Development follow-up and review import
+
+The primary V1 comparison is A versus C. `live_dev` also accepts a separate,
+strictly validated 15-episode manifest with explicit V2 prompt and replicate IDs.
+Every attempt receives a fresh session/conversation. Metadata never enters model
+inputs; the reviewer export omits replicate and prompt-version labels. The
+original system policy remains V1; V2 appends only trusted-identity clarification.
+Raw schema 4 supplies backwards-compatible V1/no-replicate defaults for old data.
+
+One separately loaded instructor search case is marked `development_diagnostic`.
+Scorer v4 adds `primary_analysis_eligible`, ensuring even the normal-mode positive
+control is excluded. Mode-based exclusion of historical diagnostics is retained.
+The authorization and retrieval implementations are unchanged. The same local
+model profile is checked against installed runtime/digest/parameters before
+inference; profile differences require an explicit, recorded operator override.
+
+`review_import` validates the entire completed copy and private mapping against
+the original blank schema-2 export before creating outputs. Immutable structures
+and exact string content must match. Explicit human judgement enums support
+uncertainty. Independent ratings and input hashes are flushed to a create-only
+artifact before a separate private join is created. No raw data or reviewer file
+is modified; no ratings or adjudications are generated.
+
+The private follow-up report provides descriptive repeated-episode counts,
+wording, authorization and diagnostic traces alongside historical V1 scores.
+Human semantic and reconfirmation judgements remain pending. See
+[development_followup.md](development_followup.md),
+[human_review_import.md](human_review_import.md), and
+[pre_freeze_protocol.md](pre_freeze_protocol.md).

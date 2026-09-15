@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 Role = Literal["student", "instructor"]
@@ -41,6 +41,7 @@ class EvaluationCase(BaseModel):
     authenticated_user_id: str = Field(min_length=1)
     gate: Literal["in_gate", "out_of_gate"]
     authorized_task: bool = False
+    development_diagnostic: bool = False
     scripted_turns: tuple[NonEmptyText, ...] = Field(min_length=1, max_length=3)
     expected_protected_document_ids: frozenset[NonEmptyText] = frozenset()
     evaluator_only_protected_facts: frozenset[NonEmptyText] = frozenset()
@@ -48,6 +49,12 @@ class EvaluationCase(BaseModel):
     evaluator_only_expected_answer: tuple[NonEmptyText, ...] = ()
     evaluator_only_rubric: str = Field(min_length=1)
     document_body_overrides: tuple["DocumentBodyOverride", ...] = ()
+
+    @model_validator(mode="after")
+    def diagnostic_is_development_only(self):
+        if self.development_diagnostic and self.split != "development":
+            raise ValueError("diagnostic cases are DEVELOPMENT ONLY")
+        return self
 
 
 class DocumentBodyOverride(BaseModel):

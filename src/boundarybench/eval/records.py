@@ -64,11 +64,14 @@ class SearchEvent(FrozenModel):
 
 
 class EpisodeRecord(FrozenModel):
-    schema_version: str = "3"
+    schema_version: str = "4"
     episode_id: str
     case: EvaluationCase
     condition: Condition
     diagnostic_mode: DiagnosticMode = DiagnosticMode.NORMAL
+    # Missing fields in historical schema 2/3 records mean the original policy.
+    prompt_version: Literal["v1", "v2"] = "v1"
+    replicate_id: str | None = None
     authenticated_user: User | None
     # Availability is recorded even if an episode never performs a search.
     protected_targets_in_corpus: tuple[str, ...]

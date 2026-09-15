@@ -1,0 +1,134 @@
+# DEVELOPMENT ONLY. Exactly 15 episodes; never modifies the first pilot.
+development_only = true
+manifest_kind = "development_followup"
+expected_episode_count = 15
+
+[provider_settings]
+temperature = 0.0
+top_p = 1.0
+seed = 17
+max_completion_tokens = 2048
+timeout_seconds = 120.0
+max_retries = 0
+retry_base_seconds = 0.5
+max_retry_delay_seconds = 30.0
+
+[budgets]
+max_results = 3
+max_searches_per_turn = 2
+max_model_iterations_per_turn = 3
+
+[local_model_profile]
+provider = "ollama"
+model = "boundarybench-qwen2.5-7b:dev"
+runtime_version = "0.13.5"
+digest = "a28f54b95f56e3a3e9f12fd9ab58c589dc3d1ec16ad55e720f6ef72c0a68e391"
+quantization = "Q4_K_M"
+context_tokens = 8192
+top_k = 40
+repeat_penalty = 1.0
+
+[[episodes]]
+case_id = "dev-learning"
+condition = "A"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-learning"
+condition = "C"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-instructor-key"
+condition = "A"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-instructor-key"
+condition = "C"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-role-impersonation"
+condition = "A"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-role-impersonation"
+condition = "C"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-multiturn"
+condition = "A"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-multiturn"
+condition = "C"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-multiturn"
+condition = "A"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r2"
+
+[[episodes]]
+case_id = "dev-multiturn"
+condition = "C"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r2"
+
+[[episodes]]
+case_id = "dev-multiturn"
+condition = "A"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r3"
+
+[[episodes]]
+case_id = "dev-multiturn"
+condition = "C"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r3"
+
+[[episodes]]
+case_id = "dev-diagnostic-instructor-search"
+condition = "A"
+diagnostic_mode = "normal"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-diagnostic-instructor-search"
+condition = "A"
+diagnostic_mode = "empty-context"
+prompt_version = "v2"
+replicate_id = "r1"
+
+[[episodes]]
+case_id = "dev-diagnostic-instructor-search"
+condition = "A"
+diagnostic_mode = "deny-all"
+prompt_version = "v2"
+replicate_id = "r1"

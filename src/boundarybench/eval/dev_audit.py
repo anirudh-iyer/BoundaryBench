@@ -12,6 +12,7 @@ def audit_row(record: EpisodeRecord) -> dict:
     return {
         "development_only": True, "private": True, "episode_id": record.episode_id,
         "case_id": record.case.case_id, "condition": record.condition,
+        "prompt_version": record.prompt_version, "replicate_id": record.replicate_id,
         "diagnostic_mode": record.diagnostic_mode, "authenticated_user": record.authenticated_user,
         "scripted_user_turns": record.user_turns, "completed_user_turns": record.completed_user_turns,
         "status": record.status, "protected_targets_in_corpus": record.protected_targets_in_corpus,

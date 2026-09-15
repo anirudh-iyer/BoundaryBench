@@ -1,5 +1,75 @@
 # Development status
 
+## Narrow follow-up infrastructure (implemented; model not run)
+
+The 15-episode development follow-up is ready for separate operator execution.
+**199 offline tests pass** (the existing 147 plus 52 follow-up/import checks).
+No local model, paid API, held-out cases or held-out corpus were executed or
+created during this work. Actual independent human review remains pending.
+
+- `SYSTEM_POLICY_V1` preserves the original prompt exactly. V2 appends only the
+  supplied authoritative-identity/no-reconfirmation clarification. It adds no
+  disclosure, token or attack-specific security instruction.
+- `configs/dev_followup_local.toml` validates exactly 15 explicit V2 episodes:
+  learning, instructor utility and impersonation in A/C; three fresh multi-turn
+  replicates per condition; one instructor search case in normal/empty/deny-all A.
+  All three diagnostic episodes are excluded from primary aggregation.
+- Prompt/replicate metadata is recorded in raw/run manifests and private mapping.
+  Replicate IDs never enter model inputs or independent review exports. Raw
+  schema 4 reads historical V1 records; scorer v4 retains original endpoint
+  semantics while excluding normal-mode diagnostic positive controls.
+- Original sampling and budgets are preserved; the local runtime, digest,
+  quantization, context, top_k and repeat_penalty are checked before inference.
+  Profile changes require explicit operator override and are recorded.
+- Human review import validates immutable content and explicit judgement enums,
+  preserves independent ratings with input SHA256s/timestamp/reviewer/schema,
+  then writes a separate private condition/score join. It generates no ratings.
+- The private follow-up report distinguishes completed attempts, opportunities,
+  exposure, literal disclosure, wording variability and actual diagnostic
+  execution. Semantic and identity-reconfirmation judgements remain pending.
+- [Pre-freeze protocol](docs/pre_freeze_protocol.md) fixes the decision process:
+  A/C is primary; repeated A/C is the candidate direction; exact held-out counts
+  remain pending until development and independent review are complete.
+
+Validation command:
+
+```text
+.venv/Scripts/python.exe -X utf8 -m pytest -q --basetemp .pytest_cache/followup-validation-2 --tb=short
+```
+
+All 28 files in the published first-pilot bundle, including `SHA256SUMS.json`,
+were checked against the pre-edit byte-hash inventory. All 27 published checksum
+entries match. The checksum file itself retains SHA256
+`2dcd1f90093e0dee89fcd8a097e19383cf7a76d0887b9d3fdf5acd129ad5b88e`.
+Original pilot manifests and the original 14-case development file are unchanged.
+The original observations below remain historical; V2 is not retroactive.
+
+### Follow-up file inventory
+
+| Added | Purpose |
+|---|---|
+| `configs/dev_followup_local.toml` | Exact 15-episode plan and original model profile |
+| `data/development/diagnostics.jsonl` | One instructor search diagnostic |
+| `src/boundarybench/review_import.py` | Validated independent preservation/private join CLI |
+| `src/boundarybench/eval/followup_report.py` | Private descriptive follow-up report generator |
+| `tests/test_followup.py`, `tests/test_review_import.py` | Offline follow-up, provenance and tamper-rejection tests |
+| `docs/development_followup.md`, `docs/human_review_import.md`, `docs/pre_freeze_protocol.md` | Execution, human review and pre-freeze protocols |
+
+| Modified | Purpose |
+|---|---|
+| `src/boundarybench/live_dev.py` | Backwards-compatible manifest, execution gate, profile checks and exports |
+| `src/boundarybench/eval/runner.py`, `src/boundarybench/eval/records.py` | Versioned prompts and replicate metadata |
+| `src/boundarybench/data.py`, `src/boundarybench/models/schemas.py` | Separately loaded diagnostic case/schema |
+| `src/boundarybench/eval/scoring.py`, `src/boundarybench/metrics/aggregate.py` | Diagnostic positive-control exclusion |
+| `src/boundarybench/eval/review.py`, `src/boundarybench/eval/dev_audit.py` | Private prompt/replicate provenance |
+| `README.md`, `research_plan.md`, `DEVELOPMENT_STATUS.md`, `docs/architecture.md`, `data/development/README.md` | Current status and interpretation |
+
+Proposed command only; it has **not** been executed:
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m boundarybench.live_dev --provider ollama --model boundarybench-qwen2.5-7b:dev --manifest configs/dev_followup_local.toml --output results/dev-followup-local-001 --allow-local-model
+```
+
 ## Implemented
 
 - Separate corpus availability, unfiltered ranking/window opportunity, diagnostic
@@ -69,7 +139,7 @@ local cache for reuse.
 
 ## Methodological choices
 
-The primary interpretation is A versus external enforcement. B/C/D may be
+The primary interpretation is A versus C external enforcement. B/C/D may be
 identical and cannot establish architectural superiority or independent
 redundancy. Trusted permission metadata remains model-visible so A has the
 information necessary to apply its behavioral policy. Hidden/corrupted metadata
@@ -88,7 +158,8 @@ positive opportunity/exposure/disclosure evidence survives later failure.
 The review order is: run, export the independent initial review file, conduct
 human review, import/adjudicate while preserving initial ratings, then join to
 automatic scores and conditions using the private mapping. Only the reviewer
-file is shared initially. Import/adjudication tooling remains pending. Export
+file is shared initially. Import is now implemented; actual ratings and
+adjudication remain pending. Export
 schema 2 remains independent. Raw schema 3 adds mode and provider-attempt metadata;
 scorer v3 labels diagnostics and gives them null block scores. Private mapping
 schema 2 adds mode. Earlier raw schema 2 records remain readable as normal mode.
@@ -116,7 +187,7 @@ Independent human ratings and targeted development follow-ups remain pending.
 Literal matching misses semantic inference; utility/refusal heuristics need calibrated
 human review. Transcript behavior and repeated tasks can still reveal an
 intervention despite removal of condition identifiers and automatic outcomes.
-Human adjudication/import, empirical diagnostic checks, family-aware
+Human adjudication, empirical diagnostic checks, family-aware
 confidence intervals, and the full held-out design remain pending. Raw storage
 is create-only at the application layer, not OS-enforced WORM or crash recovery.
 Provider submission is observable; remote receipt after an error is uncertain.
