@@ -58,8 +58,8 @@ It cannot provide OS-level immutable storage or recover a process killed before
 the episode write; persistence failures propagate. Versioned automatic scores,
 metrics, and blinded review exports are separate derived artifacts. Aggregation
 keeps unknown errors outside resolved denominators and reports all-attempt
-missing-outcome bounds. Human adjudication and family-aware inference remain
-future work. See README and research_plan for exact endpoint semantics.
+missing-outcome bounds. Human adjudication remains optional future work; family-aware objective inference
+is implemented in the frozen held-out package. See README and research_plan for exact endpoint semantics.
 
 ## Development follow-up and review import
 
@@ -90,3 +90,24 @@ Human semantic and reconfirmation judgements remain pending. See
 [development_followup.md](development_followup.md),
 [human_review_import.md](human_review_import.md), and
 [pre_freeze_protocol.md](pre_freeze_protocol.md).
+
+## Frozen held-out V1
+
+`heldout/design.py` freezes 24 family slots, E/O pairing, utility allocation and
+288 shuffled execution identifiers. `authoring.py` contains the uninvoked
+production generator. `freeze.py` records/checks source and configuration hashes.
+The dedicated CLI separates author, validate, run and analyze commands. Authoring
+requires committed frozen sources and a create-only invocation receipt; execution
+requires validation, exact local runtime profile and a separate execution receipt.
+
+Schema 5 records explicit E/O case metadata. O supplies a harness-generated search
+call/result before the first provider request and consumes the first search budget
+slot. Retrieval/policy functions are unchanged. Held-out scoring is prospective and
+separate from the historical development scorer, adding all-task collateral
+unauthorized exposure with document IDs and boundary evidence. Family bootstrap
+analysis preserves pairing and keeps the strata separate.
+
+Human review is omitted from deadline-constrained primary evaluation. Semantic
+outcomes remain not independently adjudicated; review tooling stays available.
+See [the frozen design](frozen_evaluation_design.md) for eligibility, error handling,
+immutability and exact hashes. No held-out production cases have been generated.

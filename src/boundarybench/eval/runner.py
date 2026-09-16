@@ -10,7 +10,7 @@ from uuid import uuid4
 from boundarybench.eval.records import (
     EpisodeRecord, Invocation, OperationalError, RawRecordStore, SearchEvent, canonical_json, digest,
 )
-from boundarybench.models.llm import Message, ModelProvider, ModelRequest
+from boundarybench.models.llm import Message, ModelProvider, ModelRequest, ToolCall
 from boundarybench.models.diagnostics import DiagnosticMode
 from boundarybench.models.schemas import Document, EvaluationCase, User
 from boundarybench.retrieval.engine import Condition, RetrievalHarness
@@ -67,15 +67,24 @@ class EpisodeRunner:
 
     def run(self, case: EvaluationCase, condition: Condition,
             diagnostic_mode: DiagnosticMode = DiagnosticMode.NORMAL, *,
-            prompt_version: str = "v1", replicate_id: str | None = None) -> EpisodeRecord:
+            prompt_version: str = "v1", replicate_id: str | None = None,
+            execution_id: str | None = None) -> EpisodeRecord:
         if prompt_version not in SYSTEM_POLICIES:
             raise ValueError("unknown prompt version")
-        if replicate_id is not None and (case.split != "development" or not replicate_id.strip()):
-            raise ValueError("replicates require a development case and nonempty ID")
+        if replicate_id is not None and not replicate_id.strip():
+            raise ValueError("replicates require a nonempty ID")
         condition = Condition(condition)
         diagnostic_mode = DiagnosticMode(diagnostic_mode)
         if diagnostic_mode != DiagnosticMode.NORMAL and case.split != "development":
             raise ValueError("diagnostics are DEVELOPMENT ONLY")
+        # Construction assertions precede session creation and every provider call.
+        controlled_trace = None
+        if case.evaluation_stratum == "O":
+            if diagnostic_mode != DiagnosticMode.NORMAL or condition not in (Condition.A, Condition.C):
+                raise ValueError("controlled evaluation requires normal A/C")
+            from boundarybench.heldout.design import controlled_pair
+            pair = controlled_pair(case, self.documents, tuple(self.users.values()), self.max_results)
+            controlled_trace = pair[0 if condition == Condition.A else 1]
         started_at = now()
         user = self.users.get(case.authenticated_user_id)
         policy = NO_POLICY_TASK if diagnostic_mode == DiagnosticMode.NO_POLICY else SYSTEM_POLICIES[prompt_version]
@@ -111,6 +120,17 @@ class EpisodeRunner:
             for turn_index, turn in enumerate(case.scripted_turns):
                 conversation.append(Message(role="user", content=turn))
                 search_count = 0
+                if turn_index == 0 and controlled_trace is not None:
+                    call_id = "controlled-search"
+                    seen_call_ids.add(call_id)
+                    conversation.append(Message(role="assistant", tool_calls=(ToolCall(
+                        call_id=call_id, name="search",
+                        arguments_json=canonical_json({"query": case.controlled_retrieval_query}),
+                    ),)))
+                    conversation.append(Message(role="tool", content=controlled_trace.serialized_response,
+                                                tool_call_id=call_id))
+                    searches.append(SearchEvent(user_turn_index=0, tool_call_id=call_id, trace=controlled_trace))
+                    search_count = 1
                 for iteration in range(self.max_model_iterations_per_turn):
                     request_index = len(invocations)
                     request = ModelRequest(messages=tuple(conversation), tools=(SEARCH_TOOL,))
@@ -190,6 +210,9 @@ class EpisodeRunner:
             except PackageNotFoundError:
                 dependencies[name] = "not-installed"
         manifest = {
+            "evaluation_stratum": case.evaluation_stratum,
+            "evaluation_label": ("opportunity-controlled retrieval evaluation"
+                                 if case.evaluation_stratum == "O" else "end-to-end / agentic"),
             "prompt_version": prompt_version, "replicate_id": replicate_id,
             "python": platform.python_version(), "dependencies": dependencies,
             "provider": self.provider.metadata,
@@ -203,7 +226,8 @@ class EpisodeRunner:
         manifest["configuration_hash"] = digest(manifest["configuration"])
         corpus_ids = {document.document_id for document in documents}
         record = EpisodeRecord(
-            episode_id=str(uuid4()), case=case, condition=condition, authenticated_user=user,
+            schema_version="5" if case.split == "held_out" else "4",
+            episode_id=execution_id or str(uuid4()), case=case, condition=condition, authenticated_user=user,
             diagnostic_mode=diagnostic_mode,
             prompt_version=prompt_version, replicate_id=replicate_id,
             provider=self.provider.metadata, started_at=started_at, finished_at=now(),

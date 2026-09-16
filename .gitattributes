@@ -1,0 +1,2 @@
+# Preserve freeze artifacts exactly across platforms; historical bundles untouched.
+freeze/** -text

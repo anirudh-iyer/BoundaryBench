@@ -1,3 +1,6 @@
+> Historical scaffold proposal. Its counts, conditions and review requirements are
+> superseded by [the frozen V1 design](docs/frozen_evaluation_design.md).
+
 # BoundaryBench: Research Plan and Project Scaffold
 
 ## Summary

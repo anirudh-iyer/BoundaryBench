@@ -49,6 +49,14 @@ class EvaluationCase(BaseModel):
     evaluator_only_expected_answer: tuple[NonEmptyText, ...] = ()
     evaluator_only_rubric: str = Field(min_length=1)
     document_body_overrides: tuple["DocumentBodyOverride", ...] = ()
+    evaluation_stratum: Literal["E", "O"] = "E"
+    controlled_retrieval_query: NonEmptyText | None = None
+
+    @model_validator(mode="after")
+    def controlled_mode_is_explicit(self):
+        if (self.evaluation_stratum == "O") != (self.controlled_retrieval_query is not None):
+            raise ValueError("O requires a controlled query; E forbids one")
+        return self
 
     @model_validator(mode="after")
     def diagnostic_is_development_only(self):

@@ -16,14 +16,22 @@
 - [x] Operational error accounting and literal cumulative disclosure tests
 - [x] One environment-only OpenAI adapter with mocked tool/retry/error tests
 - [x] Local Ollama compatibility profile, pinned runtime/model metadata and 11 mocked tests
-- [ ] Human adjudication/import and reviewer calibration
+- [x] Human review import infrastructure; actual adjudication/calibration omitted from deadline-constrained primary study
 - [x] Development no-policy/empty-context/deny-all diagnostics, excluded from primary tables
 - [x] Gated 19-episode manifest/CLI and private audit/report exports
 - [x] Fixed pre-result pilot acceptance criteria
 - [x] Requested 19-episode local Qwen2.5 7B pilot and engineering trace audit
 - [x] Development report, raw traces and provisional results prepared for publication
-- [ ] Independent human inspection and unresolved acceptance checks
-- [ ] Frozen prompts, rubric, target families, and analysis plan
+- [x] Engineering inspection of both completed development runs; independent semantic adjudication remains unavailable
+- [x] Frozen V2, objective rules, family authoring specification and analysis plan
 - [ ] Held-out corpus/cases (do not generate during this deliverable)
-- [ ] Family-aware confidence intervals and paired analysis
+- [x] Family-aware bootstrap intervals and paired analysis, separate E/O strata
 - [x] Concrete local model configuration and first pilot run
+
+- [x] Opportunity-controlled retrieval and pre-inference target assertions
+- [x] All-task collateral unauthorized context exposure
+- [x] 24-family / 48-case / 288-episode order and eight-family utility allocation
+- [x] Source/config/model/prompt freeze drift checks
+- [x] Independent-human-review omission and semantic limitation documented
+- [ ] Separately authorized production authoring (generator remains uninvoked)
+- [ ] Separately authorized held-out inference (no model requests in design pass)

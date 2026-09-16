@@ -8,23 +8,21 @@ rank their architectural security or demonstrate independent redundancy.
 
 ## Status
 
-Implemented: trusted schemas and policy, deterministic lexical retrieval,
-separate opportunity/denial/prevention/exposure traces, 14 development cases,
-a provider-independent message/tool interface, deterministic offline doubles,
-a bounded episode runner, create-only raw JSONL, provisional automatic scoring,
-explicit-denominator general and target metrics, and independent initial human
-review with a separate private join mapping. One OpenAI Chat Completions adapter,
-development diagnostics, a gated small-pilot CLI, private audit/report exports,
-and a local Ollama compatibility profile are implemented. The 15-episode V2
-development follow-up, independent review import and pre-freeze protocol are also
-implemented. **199 offline tests pass.** The follow-up has not been executed.
+The final V1 design is frozen in [V1_FREEZE.json](freeze/V1_FREEZE.json) and
+[frozen_evaluation_design.md](docs/frozen_evaluation_design.md): **24 target
+families / 48 cases / 288 episodes**, A versus C, three fresh-session repeated
+trials. End-to-end and opportunity-controlled strata are analyzed separately.
+Eight families use authorized configurations; collateral unauthorized context
+exposure is measured even on authorized tasks. Fixed sampling produced behavioral
+variation during development, motivating repeats without treating them as independent.
 
-A **19-episode local development pilot** ran with Qwen2.5 7B Instruct:
-19 completed, zero operational errors. The [published development bundle](reports/development/qwen2.5-7b-001/README.md)
-contains raw traces, configuration, provisional scores and reports. Independent
-human review is pending. **No held-out cases or final research findings exist.**
-The final held-out case/episode counts remain pending follow-up review.
-See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for validation and next steps.
+The original 19-episode pilot and completed 15-episode V2 follow-up are immutable
+historical development evidence. **No held-out cases or model results exist.**
+Independent human review is omitted from the deadline-constrained primary study.
+Objective literal/exposure/utility endpoints are primary; semantic disclosure
+remains not independently adjudicated. Review tooling and raw outputs are retained.
+See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) and the
+[freeze summary](freeze/V1_FREEZE.md) for validation and the next authoring command.
 
 ## Run locally
 
@@ -65,7 +63,7 @@ For the newly implemented **15-episode follow-up**, see
 [dev_followup_local.toml](configs/dev_followup_local.toml). It uses A/C, V2's
 identity-only clarification, three fresh multi-turn replicates per condition and
 three instructor search diagnostics. The original pilot below is unchanged.
-The follow-up is implemented and offline-tested; no model execution has occurred.
+The follow-up completed: 15 attempted, 13 completed, two retained tool-budget errors.
 
 The supplied [pilot manifest](configs/dev_pilot.toml) selects **19 episodes**:
 six core cases plus two counterparts in A and C, and three diagnostic episodes.
@@ -109,10 +107,11 @@ are stored separately and rejected by primary aggregation functions.
 ## What the trace measures
 
 The old `protected_target_retrieval` and `removed_document_ids` fields are
-replaced in schema version 2; do not reinterpret older logs. New raw records use
+replaced in schema version 2; do not reinterpret older logs. Development raw records use
 schema 4, adding explicit prompt-version/replicate metadata to schema 3's
 diagnostic modes and provider request/attempt metadata. Historical schema 2/3
 records remain readable with V1/no-replicate defaults; schema 2 defaults to normal mode.
+Prospective held-out schema 5 adds explicit E/O case metadata and a frozen controlled query.
 
 | Field | Meaning |
 |---|---|
@@ -171,7 +170,7 @@ outputs, including quotes in refusals and literal splits across turns. It cannot
 reliably judge paraphrase, indirect inference, semantic reconstruction, utility,
 or all refusals. ATS uses expected-answer text; over-refusal uses a separately
 labelled phrase heuristic. Incorrect non-refusal answers can fail both measures.
-**All automatic scores require human review.** The initial reviewer file contains
+**Historical development scoring was provisional. Frozen held-out primary outcomes use the objective rules in the frozen design; independent semantic review is omitted.** The initial reviewer file contains
 an opaque per-episode review ID, case ID, transcript, scripted turns, task/fact
 expectations, rubric, operational status, and empty disclosure/utility/refusal
 judgement and notes fields. It contains no condition label, condition pseudonym,
@@ -179,7 +178,7 @@ automatic judgement, or other derived outcome. Case IDs identify the same task
 across conditions. Error stages and error text are withheld. The separate private
 mapping connects `review_id` to `episode_id`, condition, diagnostic mode and the automatic score.
 
-The intended workflow is:
+The optional retrospective human-review workflow remains:
 
 1. Run offline checks or the separately authorized small development pilot.
 2. Export the independent initial reviewer file and withhold its private mapping.
@@ -191,8 +190,7 @@ The intended workflow is:
 Human import is implemented through `python -m boundarybench.review_import`:
 see [input schemas and preservation order](docs/human_review_import.md).
 It validates immutable review inputs, preserves independent ratings and source
-hashes, then creates a separate private join. Actual ratings, adjudication and
-inferential statistics remain pending. Blinding is not perfect:
+hashes, then creates a separate private join. Actual ratings and adjudication remain pending; family-aware objective analysis is implemented separately for held-out V1. Blinding is not perfect:
 behavioral differences and repeated tasks in transcripts may reveal an intervention.
 Review schema version 2 replaces the old condition-pseudonym/automatic-score
 export. Do not give old reviewer exports to independent initial reviewers.
@@ -230,7 +228,7 @@ semantics are unchanged.
 Error-only outcomes remain unknown; positive disclosure/exposure is
 retained despite later failure. Completion and error rates include all attempts.
 Empty denominators return `null`. See [research_plan.md](research_plan.md) for
-precise populations, interpretation, and the work required before a held-out freeze.
+historical context and the frozen held-out methodology.
 
 ## Layout
 
