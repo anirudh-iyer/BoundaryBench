@@ -1,0 +1,319 @@
+{
+  "report_type": "BoundaryBench V1 production authoring verification",
+  "verification_timestamp_utc": "2026-09-17 00:52:42 UTC",
+  "head_commit": "aa08f9b242877131e037df53d45ae85a28b4b216",
+  "branch": "main",
+  "repository_before_authoring": {
+    "working_tree_clean": true,
+    "benchmark_directory_exists": false,
+    "authoring_receipt_exists": false,
+    "production_completion_artifact_found": false
+  },
+  "frozen_provenance": {
+    "artifact": "freeze/V1_FREEZE.json",
+    "sha256": "2f6cc10a1d39d19edb306850d093f3c1407c8b46c9736a04afd180ce64dd2264",
+    "recorded_base_source_commit": "b3a0699b4dafd6adcca3efe9c13f2a5736d9278a",
+    "methodology_commit": "aa08f9b242877131e037df53d45ae85a28b4b216",
+    "freeze_timestamp_utc": "2026-09-15T23:29:03.208491+00:00",
+    "source_manifest_sha256": "bb67d4e1a0c841d9f583b8822dcaf2cb2e06b98aa95b84f62aee97b6bb50c762",
+    "source_files_verified": 75,
+    "committed_freeze_and_frozen_sources_verified_by_author_command": true,
+    "freeze_manifest_files_verified": 3,
+    "historical_files_verified": 82
+  },
+  "seeds": {
+    "model": 17,
+    "execution_order": 20260915,
+    "bootstrap": 20260916,
+    "heldout_authoring": 20260917
+  },
+  "authoring": {
+    "command": ".venv/Scripts/python.exe -X utf8 -m boundarybench.heldout author --freeze freeze/V1_FREEZE.json --benchmark data/heldout/V1",
+    "production_invocation_count": 1,
+    "command_started_utc": "2026-09-17 00:48:45 UTC",
+    "command_finished_utc": "2026-09-17 00:48:47 UTC",
+    "exit_code": 0,
+    "stdout": "Completed author; no inference unless explicitly running the run command.\r\n",
+    "timestamp_note": "Production artifacts have no embedded authoring timestamp or source commit. Command timestamps and artifact filesystem modification timestamps are independently observed here; this report does not alter the frozen authoring format.",
+    "receipt_note": "The create-only receipt remains status=reserved by design; AUTHORING_COMPLETE.json is the separate success marker.",
+    "artifacts": [
+      {
+        "path": "freeze/V1_AUTHORING_RECEIPT.json",
+        "sha256": "53283e5b098fb50e457f127c8b707c25c2be330d8d44910ca56bd771ff7d1deb",
+        "bytes": 104,
+        "mtime_utc": "2026-09-17T00:48:47.261524+00:00"
+      },
+      {
+        "path": "data/heldout/V1/bundle.json",
+        "sha256": "7ad098046d6236fd5e4c2d34608a46c05221593abc56254da939ceb34d0c9184",
+        "bytes": 134482,
+        "mtime_utc": "2026-09-17T00:48:47.344604+00:00"
+      },
+      {
+        "path": "data/heldout/V1/AUTHORING_COMPLETE.json",
+        "sha256": "ebde4b3db928df59e80fc6d42bf084aafc8679887079b1e01b841ab51beecd46",
+        "bytes": 311,
+        "mtime_utc": "2026-09-17T00:48:47.347621+00:00"
+      }
+    ],
+    "receipt": {
+      "freeze_sha256": "2f6cc10a1d39d19edb306850d093f3c1407c8b46c9736a04afd180ce64dd2264",
+      "status": "reserved"
+    },
+    "completion": {
+      "bundle_sha256": "7ad098046d6236fd5e4c2d34608a46c05221593abc56254da939ceb34d0c9184",
+      "freeze_sha256": "2f6cc10a1d39d19edb306850d093f3c1407c8b46c9736a04afd180ce64dd2264",
+      "output": "D:\\Hackathon\\BoundaryBench\\data\\heldout\\V1",
+      "receipt_sha256": "53283e5b098fb50e457f127c8b707c25c2be330d8d44910ca56bd771ff7d1deb"
+    }
+  },
+  "offline_tests": {
+    "before": {
+      "command": ".venv/Scripts/python.exe -X utf8 -m pytest -q --basetemp .pytest_cache/heldout-v1-pre-authoring-20260916 --tb=short",
+      "exit_code": 0,
+      "passed": 258,
+      "duration_seconds": 19.22,
+      "stdout": "........................................................................ [ 27%]\r\n........................................................................ [ 55%]\r\n........................................................................ [ 83%]\r\n..........................................                               [100%]\r\n258 passed in 19.22s\r\n"
+    },
+    "after": {
+      "command": ".venv/Scripts/python.exe -X utf8 -m pytest -q --basetemp .pytest_cache/heldout-v1-post-authoring-20260916 --tb=short",
+      "exit_code": 0,
+      "passed": 258,
+      "duration_seconds": 19.01,
+      "stdout": "........................................................................ [ 27%]\r\n........................................................................ [ 55%]\r\n........................................................................ [ 83%]\r\n..........................................                               [100%]\r\n258 passed in 19.01s\r\n"
+    },
+    "isolation": "Existing suite blocks live HTTP and production author_bundle. Offline fixtures and mocked adapters do not perform model inference."
+  },
+  "checks": {
+    "freeze_before": {
+      "command": ".venv/Scripts/python.exe -X utf8 -m boundarybench.heldout check",
+      "exit_code": 0,
+      "stdout": "Completed check; no inference unless explicitly running the run command.\r\n"
+    },
+    "initial_authored_validation": {
+      "command": ".venv/Scripts/python.exe -X utf8 -m boundarybench.heldout validate --freeze freeze/V1_FREEZE.json --benchmark data/heldout/V1",
+      "exit_code": 0,
+      "stdout": "Completed validate; no inference unless explicitly running the run command.\r\n"
+    },
+    "freeze_after": {
+      "command": ".venv/Scripts/python.exe -X utf8 -m boundarybench.heldout check",
+      "exit_code": 0,
+      "stdout": "Completed check; no inference unless explicitly running the run command.\r\n"
+    },
+    "authored_validation_after": {
+      "command": ".venv/Scripts/python.exe -X utf8 -m boundarybench.heldout validate --freeze freeze/V1_FREEZE.json --benchmark data/heldout/V1",
+      "exit_code": 0,
+      "stdout": "Completed validate; no inference unless explicitly running the run command.\r\n"
+    },
+    "structural_audit": {
+      "checks": [
+        {
+          "number": 1,
+          "description": "24 unique target families",
+          "status": "PASS"
+        },
+        {
+          "number": 2,
+          "description": "48 unique cases",
+          "status": "PASS"
+        },
+        {
+          "number": 3,
+          "description": "24 E cases",
+          "status": "PASS"
+        },
+        {
+          "number": 4,
+          "description": "24 O cases",
+          "status": "PASS"
+        },
+        {
+          "number": 5,
+          "description": "Six frozen categories with four families each",
+          "status": "PASS"
+        },
+        {
+          "number": 6,
+          "description": "Eight authorized families",
+          "status": "PASS"
+        },
+        {
+          "number": 7,
+          "description": "Sixteen security families",
+          "status": "PASS"
+        },
+        {
+          "number": 8,
+          "description": "One E and one O per family",
+          "status": "PASS"
+        },
+        {
+          "number": 9,
+          "description": "E/O identity, task, documents, target, and evaluator semantics match",
+          "status": "PASS"
+        },
+        {
+          "number": 10,
+          "description": "24 protected facts unique across families",
+          "status": "PASS"
+        },
+        {
+          "number": 11,
+          "description": "E/O members share only their family protected fact",
+          "status": "PASS"
+        },
+        {
+          "number": 12,
+          "description": "No development protected secret reused anywhere in bundle",
+          "status": "PASS"
+        },
+        {
+          "number": 13,
+          "description": "No protected value in user prompts",
+          "status": "PASS"
+        },
+        {
+          "number": 14,
+          "description": "No protected value in controlled retrieval queries",
+          "status": "PASS"
+        },
+        {
+          "number": 15,
+          "description": "No protected value in injected instructions",
+          "status": "PASS"
+        },
+        {
+          "number": 16,
+          "description": "Evaluator-only answers separated from model input fields",
+          "status": "PASS"
+        },
+        {
+          "number": 17,
+          "description": "All 24 O targets occur in unfiltered top-k",
+          "status": "PASS"
+        },
+        {
+          "number": 18,
+          "description": "Controlled assertion runs before provider session or inference",
+          "status": "PASS"
+        },
+        {
+          "number": 19,
+          "description": "A/C controlled query, complete ranking, and top-k are identical",
+          "status": "PASS"
+        },
+        {
+          "number": 20,
+          "description": "A returns top-k; C applies frozen authorization filter and refill",
+          "status": "PASS"
+        },
+        {
+          "number": 21,
+          "description": "No development or diagnostic case in held-out",
+          "status": "PASS"
+        },
+        {
+          "number": 22,
+          "description": "Every split is held_out",
+          "status": "PASS"
+        },
+        {
+          "number": 23,
+          "description": "Expanded plan contains exactly 288 episodes",
+          "status": "PASS"
+        },
+        {
+          "number": 24,
+          "description": "All 288 execution IDs are unique",
+          "status": "PASS"
+        },
+        {
+          "number": 25,
+          "description": "Each case/condition has r1/r2/r3 once",
+          "status": "PASS"
+        },
+        {
+          "number": 26,
+          "description": "Complete order exactly equals frozen 288-entry order and hash",
+          "status": "PASS"
+        },
+        {
+          "number": 27,
+          "description": "Replicate and execution IDs remain metadata only",
+          "status": "PASS"
+        },
+        {
+          "number": 28,
+          "description": "Collateral exposure has document IDs and course/role/proficiency metadata for all families",
+          "status": "PASS"
+        },
+        {
+          "number": 29,
+          "description": "Frozen pre-inference validator and integrity checks pass",
+          "status": "PASS"
+        }
+      ],
+      "counts": {
+        "families": 24,
+        "cases": 48,
+        "strata": {
+          "E": 24,
+          "O": 24
+        },
+        "attack_categories": {
+          "direct / paraphrased restricted-information request": 4,
+          "role or authorization impersonation": 4,
+          "cross-course / proficiency-boundary request": 4,
+          "multi-turn escalation / request decomposition": 4,
+          "indirect inference / reconstruction": 4,
+          "retrieved prompt injection / tool-mediated manipulation": 4
+        },
+        "authorized_families": 8,
+        "security_families": 16,
+        "authorized_cases": 16,
+        "security_cases": 32,
+        "authorized_episodes": 96,
+        "security_episodes": 192,
+        "planned_episodes": 288,
+        "documents": 144,
+        "trusted_users": 24,
+        "unique_protected_facts": 24,
+        "controlled_pairs_checked": 24
+      },
+      "order_sha256": "55bf8a5c6c36e24f6f791f0a61a51dc04d1775b342551ce7fe8b88662a26bdaf",
+      "verification_mode": "structural retrieval only; no runner, provider session, scoring of production episodes, or model inference",
+      "evaluator_isolation_evidence": "authored input fields plus frozen runner/ModelRequest source inspection and offline suite"
+    }
+  },
+  "final_integrity": {
+    "production_hashes_unchanged": true,
+    "freeze_hash_unchanged": true,
+    "head_unchanged": true,
+    "tracked_files_unchanged": true,
+    "production_execution_receipt_absent": true
+  },
+  "execution": {
+    "production_model_episodes_run": 0,
+    "model_inference_performed": false,
+    "ollama_requests": 0,
+    "openai_requests": 0,
+    "live_provider_sessions": 0,
+    "human_review_used": false,
+    "llm_judge_used": false,
+    "commit_created": false
+  },
+  "commit_before_inference": [
+    "freeze/V1_AUTHORING_RECEIPT.json",
+    "data/heldout/V1/bundle.json",
+    "data/heldout/V1/AUTHORING_COMPLETE.json",
+    "reports/heldout/V1_AUTHORING_VERIFICATION.json"
+  ],
+  "next_inference": {
+    "implemented": true,
+    "syntax_verified_from": "src/boundarybench/heldout/__main__.py and python -m boundarybench.heldout --help",
+    "command": ".venv/Scripts/python.exe -X utf8 -m boundarybench.heldout run --freeze freeze/V1_FREEZE.json --benchmark data/heldout/V1 --output results/heldout-v1-001 --allow-local-model",
+    "output_path_note": "results/heldout-v1-001 is a proposed new run output directory, verified absent; the output path is not a frozen methodology setting.",
+    "executed": false,
+    "separate_authorization_required": true
+  }
+}
